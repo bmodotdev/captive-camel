@@ -1,0 +1,3 @@
+local/
+*.fatpack.pl
+.vagrant

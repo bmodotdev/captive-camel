@@ -1,0 +1,71 @@
+---
+ - hosts: demo
+   become: yes
+   remote_user: root
+   tasks:
+    - name: Perform upgrade
+      apt:
+        update_cache: yes
+        upgrade: safe
+
+    - name: Update root password
+      user:
+        name: root
+        update_password: always
+        password: "{{ root_password }}"
+
+    - name: Configure SSH
+      lineinfile:
+        dest:   /etc/ssh/sshd_config
+        backup: yes
+        state:  present
+        regexp: "{{ item.regexp }}"
+        line:   "{{ item.line }}"
+      with_items:
+        - { regexp: '^PasswordAuthentication', line: 'PasswordAuthentication Yes' }
+        - { regexp: '^PermitEmptyPasswords', line: 'PermitEmptyPasswords Yes' }
+      notify:
+        - Restart SSH
+
+    - name: Setup captive-camel
+      file:
+        path: "{{ captive_camel_conf_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Install captive-camel
+      copy:
+        dest: "{{ item.dest }}"
+        src:  "{{ item.src }}"
+        mode: "{{ item.mode }}"
+      with_items:
+        - { dest: "{{ captive_camel_bin_path }}", src: '../captive-camel.fatpack.pl', mode: '0755' }
+        - { dest: "{{ captive_camel_conf_path }}", src: '../etc/commands.yaml', mode: '0644' }
+
+    - name: Enable captive-camel as shell
+      lineinfile:
+        dest:   /etc/shells
+        backup: yes
+        state:  present
+        regexp: "^{{ captive_camel_bin_path }}$"
+        line:   "{{ captive_camel_bin_path }}"
+
+    - name: Create demo user
+      user:
+        name:   "{{ demo_user }}"
+        shell:  "{{ captive_camel_bin_path }}"
+        password: ''
+
+    - name: Install flag
+      copy:
+        dest: "/home/{{ demo_user }}/flag.txt"
+        owner: "{{ demo_user }}"
+        group: "{{ demo_user }}"
+        mode: '0600'
+        content: "{{ flag }}"
+
+   handlers:
+     - name: Restart SSH
+       service:
+         name: sshd
+         state: restarted

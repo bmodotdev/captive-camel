@@ -1,0 +1,19 @@
+---
+help: 1 # allow help
+exit: 1 # allow exit
+commands:
+  - match: sudo
+    match_type: prefix
+
+  - match: date
+    match_type: exact
+
+  - match: whoami
+    match_type: exact
+
+  - match: ls
+    match_type: exact
+    exec: ls -lah
+
+  - match: top
+    match_type: prefix
