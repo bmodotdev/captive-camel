@@ -1,100 +1,103 @@
 ---
-title: Captive Shells
-author: "William Little ~ bmo.dev"
-date: 2022-03-11
+title: Captive Camel - pwnme@tprc.bmo.dev
+author: "William Little (cPanel) ~ bmo.dev"
+date: 2022-06-24
 extensions:
   - terminal
   - qrcode
-  - image_ueberzug
 ---
 
-# Captive Shells
-
-![7](assets/bmo.png)
+# pwnme@tprc.bmo.dev
 
 ---
 
 # What is a Captive Shell?
 
-* What is a Captive Portal?
+* Captive Portal
+    - ATM, WIFI landing page
 
 ---
 
-# Use cases
+# What is a Captive Shell?
 
-* SSH Bastion or Jump Box
-* Point-of-Sale systems, (e.g. Lowe’s)
-* Limiting a user’s commands (list of linux commands to pwn)
-** Did you know you could yum exec
+* Captive Portal
+    - ATM, WIFI landing page
+* Menu Shell
+    - Point-of-Sales systems
+
+---
+
+# What is a Captive Shell?
+
+* Captive Portal
+    - ATM, WIFI landing page
+* Menu Shell
+    - Point-of-Sales systems
+* Captive Shell
+    - SSH Bastion or Jump Box
+
+---
+
+# What is a Captive Shell?
+
+* Captive Portal
+    - ATM, WIFI landing page
+* Menu Shell
+    - Point-of-Sales systems
+* Captive Shell
+    - SSH Bastion or Jump Box
+* Jailed Shell
+    - Chroot
+
 ---
 
 # Alternatives
 
-* lbash
 * rbash
-
-# Demo breakout
-```terminal8
-bash -il
-```
----
-
-# Inspiration - Why
-
-## https://bmo.dev/
-* Turtles all the way down picture
-* Prometheus node_exporter
-
+* Apparmor (Debian)
+* SELinux (CentOS/RHEL)
+* GRSEC
 
 ---
 
-# Considerations
+# Captive Camel Config
 
-## Less is more
-
-* I don’t want to ship all of bash
-* Who remember’s ShellShock?
-```bash
-env x='() { :;}; echo Vulnerable' bash -c "echo Not Vulnerable to ShellShock"
-```
-
+```yaml
 ---
+help: 1 # allow help
+exit: 1 # allow exit
+commands:
+  - match: sudo
+    match_type: prefix
 
-# Considerations
+  - match: date
+    match_type: exact
 
-## Interpreted languages
+  - match: whoami
+    match_type: exact
 
-```bash
-$ strace -fvT -e trace=execve ./foo.pl
+  - match: ls
+    match_type: exact
+    exec: ls -lah
+
+  - match: top
+    match_type: prefix
 ```
 
 ---
 
-# Considerations
+# Captive Camel Demo
 
-## Signals
-
-```file
-path: script/captive-camel.pl
-lang: perl
-lines:
-  start: 0
-  end: 10
-```
----
-
-# Hack the Gibson
-
-```terminal8
-bash -il
+```terminal20
+./captive-camel.fatpack.pl
 ```
 
 ---
 
 ```qrcode-ex
 columns:
-    - data: https://bmo.dev/
-      caption: "https://bmo.dev/blog/captive-shells"
-    - data: https://github.com/bmodotdev/captive-camel
+    - data: "https://bmo.dev/"
+      caption: "https://bmo.dev/"
+    - data: "https://github.com/bmodotdev/captive-camel"
       caption: "https://github.com/bmodotdev/captive-camel"
 ```

@@ -5,6 +5,7 @@ package script::CaptiveCamel;
 use strict;
 use warnings;
 use v5.34;
+
 use feature qw(say state signatures);
 no warnings qw(experimental::signatures);
 

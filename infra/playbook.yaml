@@ -27,6 +27,15 @@
       notify:
         - Restart SSH
 
+    - name: Stat MOTD
+      stat:
+       path: /etc/update-motd.d
+      register: motd_stat
+
+    - name: Remove MOTD
+      command: mv /etc/update-motd.d /etc/update-motd.d.bak
+      when: motd_stat.stat.exists
+
     - name: Setup captive-camel
       file:
         path: "{{ captive_camel_conf_dir }}"
