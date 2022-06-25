@@ -75,7 +75,7 @@ sub process_line ($self, @words) {
         next unless ( $command->{match} eq $words[0] );
         return $command->{exec}
             ? $self->_exec( split(/\s+/, $command->{exec}) )
-            : $self->_exec(  $command->{match} eq 'exact' ? $command->{match} : @words );
+            : $self->_exec(  $command->{match_type} eq 'exact' ? $command->{match} : @words );
     }
 
     return;
